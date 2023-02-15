@@ -60,6 +60,15 @@ void shift_image(image im, int c, float v)
 void clamp_image(image im)
 {
     // TODO Fill this in
+    for (int c = 0; c < im.c; c++)
+        for(int row = 0; row < im.h; row++)
+            for(int col = 0; col < im.w; col++)
+            {
+                if(im.data[(im.w*row + col) + c*im.w*im.h] < 0) 
+                    im.data[(im.w*row + col) + c*im.w*im.h] = 0;
+                else if(im.data[(im.w*row + col) + c*im.w*im.h] > 1) 
+                    im.data[(im.w*row + col) + c*im.w*im.h] = 1; 
+            }
 }
 
 
@@ -77,9 +86,53 @@ float three_way_min(float a, float b, float c)
 void rgb_to_hsv(image im)
 {
     // TODO Fill this in
+     for(int row = 0; row < im.h; row++)
+        for(int col = 0; col < im.w; col++)
+        {
+            // rgb
+            float R = 0.0f, G = 0.0f, B = 0.0f;
+            
+            // hsv
+            float H = 0.0f,_H = 0.0f, S = 0.0f, V = 0.0f, m = 0.0f, C = 0.0f;
+
+            R = im.data[(im.w*row + col) + 0*im.w*im.h];
+            G = im.data[(im.w*row + col) + 1*im.w*im.h];
+            B = im.data[(im.w*row + col) + 2*im.w*im.h];
+
+            // V = max(R,G,B)
+            V = three_way_max(R,G,B);
+
+            // m = min(R,G,B)
+            m = three_way_min(R,G,B);
+
+            // C = V - m
+            C = V - m;
+
+            // S = C/V
+            if (R == 0.0f && B == 0.0f && C == 0.0f) S = 0.0f; 
+            S = C / V;
+
+            // H
+            if (C == 0.0) _H = 0.0f;
+            
+            if (V == R) _H = (G - B) / 2;
+
+            if (V == G) _H = (B - R) / C + 2;
+
+            if (V == B) _H = (R - G) / C + 4;
+
+            if (_H < 0) H = _H/6 + 1;
+            else { H = _H/6; }
+
+            // rgb -> hsv
+            im.data[(im.w*row + col) + 0*im.w*im.h] = H;
+            im.data[(im.w*row + col) + 1*im.w*im.h] = S;
+            im.data[(im.w*row + col) + 2*im.w*im.h] = V;
+        }
 }
 
 void hsv_to_rgb(image im)
 {
     // TODO Fill this in
+   
 }
