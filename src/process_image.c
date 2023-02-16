@@ -134,5 +134,36 @@ void rgb_to_hsv(image im)
 void hsv_to_rgb(image im)
 {
     // TODO Fill this in
-   
+     for(int row = 0; row < im.h; row++)
+        for(int col = 0; col < im.w; col++)
+        {
+            // rgb
+            float _R = 0.0f, _G = 0.0f, _B = 0.0f;
+            
+            // hsv
+            float H = 0.0f, S = 0.0f, V = 0.0f, m = 0.0f, C = 0.0f, X = 0.0f;
+
+            H = im.data[(im.w*row + col) + 0*im.w*im.h];
+            S = im.data[(im.w*row + col) + 1*im.w*im.h];
+            V = im.data[(im.w*row + col) + 2*im.w*im.h];
+
+            if (0 <= H && H < 360 && 0 <= S && S <= 1 && 0 <= V && V <= 1){
+                C = V*S;
+                X = C*(1-abs(fmod(H/60.0, 2)-1));
+                m = V - C;
+
+                // cases
+                if (0 <= H && H < 60)         {  _R = C; _G = X; _B = 0;}   
+                else if (60 <= H && H < 120)  {  _R = X; _G = C; _B = 0;}
+                else if (120 <= H && H < 180) {  _R = 0; _G = C; _B = X;}
+                else if (180 <= H && H < 240) {  _R = 0; _G = X; _B = C;}
+                else if (240 <= H && H < 300) {  _R = X; _G = 0; _B = C;}
+                else if (300 <= H && H < 360) {  _R = C; _G = 0; _B = X;}
+                
+                // hsv -> rgb
+                im.data[(im.w*row + col) + 0*im.w*im.h] = (_R + m)*255;
+                im.data[(im.w*row + col) + 1*im.w*im.h] = (_G + m)*255;
+                im.data[(im.w*row + col) + 2*im.w*im.h] = (_B + m)*255;
+            }
+        }
 }
